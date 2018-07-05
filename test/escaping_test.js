@@ -19,6 +19,10 @@ describe('escaping', () => {
     it('must escape phrases', () => {
       expect(lucene.phrase.escape('foo"bar')).to.equal('foo\\"bar');
     });
+
+    it('must escape regular expressions', () => {
+      expect(lucene.regex.escape('foo/bar')).to.equal('foo\\/bar');
+    });
   });
 
   describe('unescape', () => {
@@ -34,6 +38,9 @@ describe('escaping', () => {
 
     it('must unescape phrases', () => {
       expect(lucene.phrase.unescape('foo\\"bar')).to.equal('foo"bar');
+    });
+    it('must unescape regular expressions', () => {
+      expect(lucene.regex.unescape('foo\\/bar')).to.equal('foo/bar');
     });
   });
 });

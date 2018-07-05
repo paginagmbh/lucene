@@ -56,6 +56,12 @@ describe('queryParser', () => {
       expect(results['left']['term']).to.equal('fizz buzz');
     });
 
+    it('parses regex terms', () => {
+      var results = lucene.parse('/fizz buzz/');
+
+      expect(results['left']['term']).to.equal('fizz buzz');
+    });
+
     it('accepts terms with \'-\'', () => {
       var results = lucene.parse('created_at:>now-5d');
 
@@ -94,6 +100,13 @@ describe('queryParser', () => {
 
     it('parses prefix operator on quoted term (+)', () => {
       var results = lucene.parse('+"fizz buzz"');
+
+      expect(results['left']['term']).to.equal('fizz buzz');
+      expect(results['left']['prefix']).to.equal('+');
+    });
+
+    it('parses prefix operator on regex term (+)', () => {
+      var results = lucene.parse('+/fizz buzz/');
 
       expect(results['left']['term']).to.equal('fizz buzz');
       expect(results['left']['prefix']).to.equal('+');

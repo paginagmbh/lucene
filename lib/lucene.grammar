@@ -216,6 +216,7 @@ term
         var result = {
           'term': term,
           'quoted': true,
+          'regex': false,
           'termLocation': location()
         };
 
@@ -239,12 +240,31 @@ term
         var result = {
           'term': term.label,
           'quoted': false,
+          'regex': false,
           'termLocation': location()
         };
         if('' != similarity)
         {
             result['similarity'] = similarity;
         }
+        if('' != boost)
+        {
+            result['boost'] = boost;
+        }
+        if('' != op)
+        {
+            result['prefix'] = op;
+        }
+        return result;
+    }
+  / op:prefix_operator_exp? term:regex_term boost:boost_modifier? _*
+    {
+        var result = {
+          'term': term.label,
+          'quoted': false,
+          'regex': true,
+          'termLocation': location()
+        };
         if('' != boost)
         {
             result['boost'] = boost;
@@ -310,6 +330,19 @@ EscapeSequence
   / "~"
   / "*"
   / " "
+
+regex_term
+  = "/" term:regex_char* "/"
+    {
+        return {
+          label: term.join(''),
+          location: location(),
+        };
+    }
+
+regex_char
+  = "\\/"
+  / [^/]
 
 proximity_modifier
   = '~' proximity:int_exp
