@@ -55,6 +55,14 @@ describe('toString', () => {
     testStr('created_at:>now+5d');
   });
 
+  it('must support regex terms', () => {
+    testStr('/^fizz b?u[A-z]/');
+  });
+
+  it('must support keyed regex terms', () => {
+    testStr('some.key:/[mh]otel/');
+  });
+
   it('must support prefix operators (-)', () => {
     testStr('-bar');
   });
@@ -261,6 +269,22 @@ describe('toString', () => {
 
   it('must support escaped whitespace', () => {
     testStr('foo:a\\ b');
+  });
+
+  it('must support whitespace in parens', () => {
+    testStr('foo ( bar OR baz)', 'foo (bar OR baz)');
+  });
+
+  it('must support ! prefix operator', () => {
+    testStr('-author:adams');
+  });
+
+  it('must support parenthesized expressions with start set', () => {
+    testStr('prop:value1 AND (NOT _exists_:other OR other:value2)');
+  });
+
+  it('must support parenthesized expressions with start set and not', () => {
+    testStr('prop:value1 AND (NOT _exists_:other OR other:value2)', 'prop:value1 AND (NOT _exists_:other OR other:value2)');
   });
 
   function testAst(ast, expected) {

@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.1.1
+ - Fix `toString` for parenthesized `NOT`.
+
+## 2.1.0
+ - Support regular expression terms.
+
+## 2.0.4
+ - Support `!` prefix.
+
+## 2.0.3
+ - Support leading whitespace in parenthesis.
+
+## 2.0.2
+ - Escape all whitespace characters in escaping / unescaping helpers.
+
 ## 2.0.1
  - `*` and `~` are not escaped/unescaped by the helpers introduced in release 2.0.0.
 
@@ -37,7 +52,7 @@ should come in handy should you have to process these values, e.g. `lucene.term.
  - Support mixed inclusive/exclusive range delimiters
 
 ## 1.1.3
- - Fix malformed `toString` output when using paranthesis.
+ - Fix malformed `toString` output when using parenthesis.
 
 ## 1.1.2
  - Upgrade to pegjs 0.8

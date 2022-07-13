@@ -48,12 +48,30 @@ describe('queryParser', () => {
       var results = lucene.parse('bar');
 
       expect(results['left']['term']).to.equal('bar');
+      expect(results['left']['quoted']).to.be.false;
+      expect(results['left']['regex']).to.be.false;
     });
 
     it('parses quoted terms', () => {
       var results = lucene.parse('"fizz buzz"');
 
       expect(results['left']['term']).to.equal('fizz buzz');
+      expect(results['left']['quoted']).to.be.true;
+      expect(results['left']['regex']).to.be.false;
+    });
+
+    it('parses regex terms', () => {
+      var results = lucene.parse('/f[A-z]?o*/');
+      expect(results['left']['term']).to.equal('f[A-z]?o*');
+      expect(results['left']['quoted']).to.be.false;
+      expect(results['left']['regex']).to.be.true;
+    });
+
+    it('parses regex terms with escape sequences', () => {
+      var results = lucene.parse('/f[A-z]?\\/o*/');
+      expect(results['left']['term']).to.equal('f[A-z]?\\/o*');
+      expect(results['left']['quoted']).to.be.false;
+      expect(results['left']['regex']).to.be.true;
     });
 
     it('parses regex terms', () => {
@@ -84,6 +102,13 @@ describe('queryParser', () => {
       expect(results['left']['prefix']).to.equal('-');
     });
 
+    it('parses prefix operator (!)', () => {
+      var results = lucene.parse('!bar');
+
+      expect(results['left']['term']).to.equal('bar');
+      expect(results['left']['prefix']).to.equal('!');
+    });
+
     it('parses prefix operator (+)', () => {
       var results = lucene.parse('+bar');
 
@@ -96,6 +121,13 @@ describe('queryParser', () => {
 
       expect(results['left']['term']).to.equal('fizz buzz');
       expect(results['left']['prefix']).to.equal('-');
+    });
+
+    it('parses prefix operator on quoted term (!)', () => {
+      var results = lucene.parse('!"fizz buzz"');
+
+      expect(results['left']['term']).to.equal('fizz buzz');
+      expect(results['left']['prefix']).to.equal('!');
     });
 
     it('parses prefix operator on quoted term (+)', () => {
@@ -609,6 +641,16 @@ describe('queryParser', () => {
       expect(results['operator']).to.equal('AND');
       expect(results['right']['field']).to.equal('<implicit>');
       expect(results['right']['term']).to.equal('android');
+    });
+
+    it('must handle whitespace in parens', () => {
+      var result = lucene.parse('foo ( bar OR baz)');
+      expect(result.left.field).to.equal('<implicit>');
+      expect(result.left.term).to.equal('foo');
+      expect(result.operator).to.equal('<implicit>');
+      expect(result.right.left.term).to.equal('bar');
+      expect(result.right.operator).to.equal('OR');
+      expect(result.right.right.term).to.equal('baz');
     });
   });
 

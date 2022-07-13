@@ -10,6 +10,7 @@
  * - quoted values ("foo bar")
  * - named fields (foo:bar)
  * - range expressions (foo:[bar TO baz], foo:{bar TO baz})
+ * - regex expressions (/^f?o[1-5]o/)
  * - proximity search expressions ("foo bar"~5)
  * - boost expressions (foo^5, "foo bar"^5)
  * - fuzzy search expressions (foo~, foo~0.5)
@@ -37,6 +38,7 @@
  *     'field': string,         // field name
  *     'term': string,          // term value
  *     'quoted': boolean,       // whether or not the value was quoted in the input string
+ *     'regex': boolean,        // whether or not the value is a regex expression
  *     'prefix': string         // prefix operator (+/-) [OPTIONAL]
  *     'boost': float           // boost value, (value > 1 must be integer) [OPTIONAL]
  *     'similarity': float      // similarity value, (value must be > 0 and < 1) [OPTIONAL]
@@ -150,7 +152,7 @@ group_exp
   / paren_exp
 
 paren_exp
-  = "(" node:node+ ")" _*
+  = "(" _* node:node+ ")" _*
     {
         node[0]['parenthesized'] = true;
         return node[0];
@@ -216,7 +218,7 @@ term
         var result = {
           'term': term,
           'quoted': true,
-          'regex': false,
+          'regex' : false,
           'termLocation': location()
         };
 
@@ -235,6 +237,20 @@ term
 
         return result;
     }
+  / op:prefix_operator_exp? term:regex_term _*
+      {
+        var result = {
+          'term': term,
+          'quoted': false,
+          'regex': true,
+          'termLocation': location()
+        };
+        if('' != op)
+        {
+            result['prefix'] = op;
+        }
+        return result;
+    }
   / op:prefix_operator_exp? term:unquoted_term similarity:fuzzy_modifier? boost:boost_modifier? _*
     {
         var result = {
@@ -247,24 +263,6 @@ term
         {
             result['similarity'] = similarity;
         }
-        if('' != boost)
-        {
-            result['boost'] = boost;
-        }
-        if('' != op)
-        {
-            result['prefix'] = op;
-        }
-        return result;
-    }
-  / op:prefix_operator_exp? term:regex_term boost:boost_modifier? _*
-    {
-        var result = {
-          'term': term.label,
-          'quoted': false,
-          'regex': true,
-          'termLocation': location()
-        };
         if('' != boost)
         {
             result['boost'] = boost;
@@ -304,8 +302,15 @@ term_char
 quoted_term
   = '"' chars:DoubleStringCharacter* '"' { return chars.join(''); }
 
+regex_term
+  = '/' chars:RegexCharacter+ '/' { return chars.join('') }
+
 DoubleStringCharacter
   = !('"' / "\\") char:. { return char; }
+  / "\\" sequence:EscapeSequence { return '\\' + sequence; }
+
+RegexCharacter
+  = !('/' / "\\") char:. { return char; }
   / "\\" sequence:EscapeSequence { return '\\' + sequence; }
 
 EscapeSequence
@@ -330,19 +335,6 @@ EscapeSequence
   / "~"
   / "*"
   / " "
-
-regex_term
-  = "/" term:regex_char* "/"
-    {
-        return {
-          label: term.join(''),
-          location: location(),
-        };
-    }
-
-regex_char
-  = "\\/"
-  / [^/]
 
 proximity_modifier
   = '~' proximity:int_exp
@@ -430,7 +422,6 @@ operator
   / 'NOT'
   / '||'
   / '&&'
-  / '!'
 
 prefix_operator_exp
   = _* operator:prefix_operator
@@ -441,6 +432,7 @@ prefix_operator_exp
 prefix_operator
   = '+'
   / '-'
+  / '!'
 
 _ "whitespace"
   = [ \t\r\n\f]+
