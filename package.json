@@ -7,14 +7,14 @@
     "lib"
   ],
   "scripts": {
-    "build": "cat lib/lucene.grammar | pegjs > ./lib/queryParser.js",
+    "build": "cat lib/lucene.grammar | npx pegjs > ./lib/queryParser.js",
     "test": "npm run build && mocha && eslint lib test",
     "prepublish": "npm run build && npm test",
     "precommit": "npm test"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/bripkens/lucene.git"
+    "url": "git://https://github.com/paginagmbh/lucene"
   },
   "keywords": [
     "lucene",
