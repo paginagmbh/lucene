@@ -656,11 +656,11 @@ describe('queryParser', () => {
 
   describe('syntax errors', () => {
     it('must throw on missing brace', () => {
-      expect(() => lucene.parse('(foo:bar')).to.throw(/SyntaxError: Expected/);
+      expect(() => lucene.parse('(foo:bar')).to.throw(/Expected/);
     });
 
     it('must throw on missing brace', () => {
-      expect(() => lucene.parse('foo:')).to.throw(/SyntaxError: Expected/);
+      expect(() => lucene.parse('foo:')).to.throw(/Expected/);
     });
   });
 

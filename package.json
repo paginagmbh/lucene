@@ -1,6 +1,6 @@
 {
   "name": "lucene",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Lucene query parser and formatter for JavaScript created using PEG.js",
   "main": "lib/lucene.js",
   "files": [
@@ -9,12 +9,11 @@
   "scripts": {
     "build": "cat lib/lucene.grammar | npx pegjs > ./lib/queryParser.js",
     "test": "npm run build && mocha --exit && eslint lib test",
-    "prepublish": "npm run build && npm test",
-    "precommit": "npm test"
+    "prepublish": "npm run build && npm test"
   },
   "repository": {
     "type": "git",
-    "url": "git://https://github.com/paginagmbh/lucene"
+    "url": "https://github.com/paginagmbh/lucene.git"
   },
   "keywords": [
     "lucene",
@@ -33,13 +32,12 @@
     "url": "https://github.com/bripkens/lucene/issues"
   },
   "devDependencies": {
-    "babel-eslint": "^7.1.1",
-    "chai": "^3.5.0",
-    "coveralls": "^3.0.5",
-    "eslint": "^6.1.0",
-    "husky": "^0.12.0",
+    "chai": "^4.3.7",
+    "coveralls": "^3.1.1",
+    "escope": "^4.0.0",
+    "eslint": "^8.27.0",
     "istanbul": "^0.4.5",
-    "mocha": "^6.2.0",
+    "mocha": "^10.1.0",
     "pegjs": "^0.10.0"
   }
 }
