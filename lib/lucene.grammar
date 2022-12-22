@@ -159,9 +159,6 @@ paren_exp
     }
 
 field_exp
-
-
-
   = fieldname:fieldname? range:range_operator_exp
     {
         range['field'] =
@@ -201,6 +198,19 @@ field_exp
 
         return fieldexp;
     }
+   / "{!" parsername:unquoted_term "}" fieldname:unquoted_term [:] term:term
+   {
+   		var parserexp = {
+        	'field': fieldname.label,
+            'fieldLocation': fieldname.location,
+            'parser': parsername.label
+        }
+
+        for(var key in term)
+            parserexp[key] = term[key];
+
+        return parserexp
+   }
 
 fieldname
   = fieldname:unquoted_term [:] _*
@@ -210,7 +220,6 @@ fieldname
           location: fieldname.location
         }
     }
-    / "{!" unquoted_term "}" fieldname:unquoted_term [:] _*
 
 term
   = op:prefix_operator_exp? term:quoted_term proximity:proximity_modifier? boost:boost_modifier? _*
