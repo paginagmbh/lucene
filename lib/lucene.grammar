@@ -209,8 +209,8 @@ fieldname
           label: fieldname.label,
           location: fieldname.location
         }
-
     }
+    / "{!" unquoted_term "}" fieldname:unquoted_term [:] _*
 
 term
   = op:prefix_operator_exp? term:quoted_term proximity:proximity_modifier? boost:boost_modifier? _*
@@ -245,10 +245,12 @@ term
           'regex': true,
           'termLocation': location()
         };
+
         if('' != op)
         {
-            result['prefix'] = op;
+	        result['prefix'] = op;
         }
+
         return result;
     }
   / op:prefix_operator_exp? term:unquoted_term similarity:fuzzy_modifier? boost:boost_modifier? _*
@@ -349,7 +351,7 @@ boost_modifier
     }
 
 fuzzy_modifier
-  = '~' fuzziness:decimal_or_int_exp?
+  = '~' fuzziness:decimal_exp?
     {
         return fuzziness == '' || fuzziness == null ? 0.5 : fuzziness;
     }
