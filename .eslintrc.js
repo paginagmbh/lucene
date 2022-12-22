@@ -1,7 +1,8 @@
 module.exports = {
   extends: 'eslint:recommended',
   env: {
-    node: true
+    node: true,
+    es6: true
   },
   rules: {
     indent: ['error', 2],
@@ -9,5 +10,8 @@ module.exports = {
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
     'no-useless-escape': 0
-  }
+  },
+  parserOptions: {
+    'ecmaVersion': 6
+  },
 };
