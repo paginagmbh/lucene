@@ -360,7 +360,7 @@ boost_modifier
     }
 
 fuzzy_modifier
-  = '~' fuzziness:decimal_exp?
+  = '~' fuzziness:decimal_or_int_exp?
     {
         return fuzziness == '' || fuzziness == null ? 0.5 : fuzziness;
     }
